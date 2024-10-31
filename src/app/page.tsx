@@ -1,9 +1,10 @@
 import banner from "@/assets/banner.jpg";
-import Products from "@/components/product/Products";
+import LoadingSkeleton from "@/components/loadingSkeleton/LoadingSkeleton";
+import Product from "@/components/product/Product";
 import { Button } from "@/components/ui/button";
 import { delay } from "@/lib/utils";
 import { getWixClient } from "@/lib/wix-client.base";
-import { ArrowRightIcon } from "@radix-ui/react-icons";
+import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -22,7 +23,7 @@ const Home = () => {
           </p>
           <Button asChild>
             <Link href="/shop">
-              Shop Now <ArrowRightIcon className="ml-2 size-5" />
+              Shop Now <ArrowRight className="ml-2 size-5" />
             </Link>
           </Button>
         </div>
@@ -35,7 +36,7 @@ const Home = () => {
           <div className="absolute inset-0 bg-gradient-to-r from-secondary via-transparent to-transparent" />
         </div>
       </div>
-      <Suspense fallback={"loading"}>
+      <Suspense fallback={<LoadingSkeleton />}>
         <FeaturedProducts />
       </Suspense>
     </main>
@@ -46,11 +47,10 @@ export default Home;
 
 async function FeaturedProducts() {
   await delay(1000);
-  // console.log("delay:", delay);
 
   const wixClient = getWixClient();
   const { collection } =
-    await wixClient.collections.getCollectionBySlug("featured-product");
+    await wixClient.collections.getCollectionBySlug("featured-products");
 
   if (!collection?._id) {
     return null;
@@ -63,17 +63,22 @@ async function FeaturedProducts() {
     .find();
 
   if (!featuredProducts.items.length) {
-    return;
+    return null;
   }
 
   return (
     <div className="space-y-5">
       <h2 className="text-2xl font-bold">Featured Products</h2>
-      <div className="flex sm:grid flex-col grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+
+      <div
+        className="flex flex-col sm:grid grid-cols-2
+       md:grid-cols-3 lg:grid-cols-4 gap-5"
+      >
         {featuredProducts.items.map((product) => (
-          <Products key={product._id} product={product} />
+          <Product key={product._id} product={product} />
         ))}
       </div>
+      <pre>{JSON.stringify(featuredProducts, null, 2)}</pre>
     </div>
   );
 }

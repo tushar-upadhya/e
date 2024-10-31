@@ -25,8 +25,8 @@ export function getWixClient() {
       recommendations,
       backInStockNotifications,
       reviews,
-      files,
       members,
+      files,
     },
     auth: OAuthStrategy({
       clientId: env.NEXT_PUBLIC_WIX_CLIENT_ID,
